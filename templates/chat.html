@@ -1,0 +1,725 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#f5f8fa">
+    <title>MediQuery AI | Medical Knowledge Assistant</title>
+
+    <style>
+        :root {
+            --primary: #16796f;
+            --primary-dark: #105c55;
+            --navy: #19364a;
+            --text: #263746;
+            --muted: #718096;
+            --border: #e2e9ee;
+            --surface: #ffffff;
+            --background: #f5f8fa;
+            --soft-teal: #e9f5f2;
+            --shadow: 0 8px 30px rgba(25, 54, 74, 0.06);
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            background: var(--background);
+            color: var(--text);
+            font-family: Inter, -apple-system, BlinkMacSystemFont,
+                         "Segoe UI", sans-serif;
+            font-size: 15px;
+            line-height: 1.65;
+        }
+
+        button, textarea { font: inherit; }
+        button { cursor: pointer; }
+
+        .topbar {
+            height: 72px;
+            background: rgba(255,255,255,.94);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+        }
+
+        .topbar-inner {
+            width: min(1160px, calc(100% - 40px));
+            margin: auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .brand-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 13px;
+            display: grid;
+            place-items: center;
+            background: var(--soft-teal);
+            color: var(--primary);
+            font-size: 23px;
+        }
+
+        .brand-name {
+            color: var(--navy);
+            font-weight: 750;
+            font-size: 18px;
+            letter-spacing: -.4px;
+        }
+
+        .brand-subtitle {
+            color: var(--muted);
+            font-size: 12px;
+            margin-top: -3px;
+        }
+
+        .status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #477267;
+            font-size: 13px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #29977e;
+        }
+
+        main {
+            width: min(1000px, calc(100% - 40px));
+            margin: 44px auto 32px;
+        }
+
+        .hero { margin-bottom: 26px; }
+
+        .eyebrow {
+            color: var(--primary);
+            font-size: 12px;
+            font-weight: 750;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+
+        h1 {
+            color: var(--navy);
+            font-size: clamp(28px, 4vw, 40px);
+            line-height: 1.2;
+            letter-spacing: -1.3px;
+            margin: 10px 0;
+        }
+
+        .hero p {
+            max-width: 650px;
+            margin: 0;
+            color: var(--muted);
+            font-size: 16px;
+        }
+
+        .notice {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 15px 17px;
+            background: #fff8e8;
+            border: 1px solid #f2e6c8;
+            border-radius: 12px;
+            color: #755d29;
+            font-size: 13px;
+            margin-bottom: 25px;
+        }
+
+        .notice-icon { font-size: 18px; }
+
+        .section-heading {
+            color: var(--navy);
+            font-size: 15px;
+            font-weight: 700;
+            margin: 0 0 12px;
+        }
+
+        .examples {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .example {
+            text-align: left;
+            padding: 15px;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            color: var(--text);
+            border-radius: 12px;
+            transition: border-color .18s, transform .18s;
+        }
+
+        .example:hover {
+            border-color: #8bbdb4;
+            transform: translateY(-2px);
+        }
+
+        .example-icon {
+            display: block;
+            font-size: 19px;
+            margin-bottom: 8px;
+        }
+
+        .example-title {
+            display: block;
+            color: var(--navy);
+            font-weight: 650;
+            font-size: 14px;
+        }
+
+        .example-description {
+            display: block;
+            color: var(--muted);
+            font-size: 12px;
+            margin-top: 4px;
+        }
+
+        .panel {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        .panel-heading {
+            padding: 18px 22px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .panel-title {
+            color: var(--navy);
+            font-weight: 700;
+        }
+
+        .clear-button {
+            border: 0;
+            background: transparent;
+            color: var(--muted);
+            padding: 7px 10px;
+            border-radius: 8px;
+            font-size: 13px;
+        }
+
+        .clear-button:hover { background: var(--background); }
+
+        .conversation {
+            padding: 22px;
+            min-height: 230px;
+        }
+
+        .welcome {
+            min-height: 185px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .welcome-icon {
+            width: 52px;
+            height: 52px;
+            display: grid;
+            place-items: center;
+            border-radius: 16px;
+            background: var(--soft-teal);
+            color: var(--primary);
+            font-size: 25px;
+            margin-bottom: 12px;
+        }
+
+        .welcome h2 {
+            font-size: 18px;
+            color: var(--navy);
+            margin: 0 0 5px;
+        }
+
+        .welcome p {
+            max-width: 420px;
+            color: var(--muted);
+            font-size: 13px;
+            margin: 0;
+        }
+
+        .question-bubble {
+            margin: 0 0 20px auto;
+            max-width: 85%;
+            width: fit-content;
+            white-space: pre-wrap;
+            background: var(--soft-teal);
+            color: #174f49;
+            border-radius: 14px 14px 3px 14px;
+            padding: 12px 15px;
+        }
+
+        .answer-heading {
+            color: var(--navy);
+            font-size: 14px;
+            font-weight: 750;
+            margin-bottom: 10px;
+        }
+
+        .answer-content {
+            line-height: 1.8;
+            overflow-wrap: anywhere;
+        }
+
+        .answer-content p { margin: 0 0 14px; }
+        .answer-content ul, .answer-content ol {
+            padding-left: 23px;
+            margin: 10px 0 18px;
+        }
+
+        .answer-content li { margin-bottom: 8px; }
+        .answer-content h2, .answer-content h3 {
+            color: var(--navy);
+            line-height: 1.4;
+            margin: 20px 0 9px;
+        }
+
+        .answer-content blockquote {
+            border-left: 3px solid var(--primary);
+            padding-left: 14px;
+            color: var(--muted);
+            margin-left: 0;
+        }
+
+        .sources {
+            border-top: 1px solid var(--border);
+            margin-top: 22px;
+            padding-top: 15px;
+        }
+
+        .sources summary {
+            color: var(--navy);
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .source-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .source-chip {
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 7px 10px;
+            background: #f9fbfc;
+            color: #526779;
+            font-size: 12px;
+            overflow-wrap: anywhere;
+        }
+
+        .composer {
+            border-top: 1px solid var(--border);
+            padding: 20px 22px;
+            background: #fcfdfd;
+        }
+
+        .composer label {
+            display: block;
+            color: var(--navy);
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 9px;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 94px;
+            resize: vertical;
+            border: 1px solid #d4dfe5;
+            border-radius: 12px;
+            padding: 14px;
+            color: var(--text);
+            background: white;
+            outline: none;
+            transition: border-color .18s, box-shadow .18s;
+        }
+
+        textarea:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(22,121,111,.1);
+        }
+
+        textarea::placeholder { color: #9aa7b2; }
+
+        .composer-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .hint {
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .send-button {
+            border: 0;
+            border-radius: 10px;
+            background: var(--primary);
+            color: white;
+            font-weight: 650;
+            padding: 11px 19px;
+            transition: background .18s;
+        }
+
+        .send-button:hover { background: var(--primary-dark); }
+        .send-button:disabled { opacity: .65; cursor: wait; }
+
+        .loading {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            color: var(--muted);
+            padding: 20px 0;
+        }
+
+        .spinner {
+            width: 19px;
+            height: 19px;
+            border: 2px solid #dcebe7;
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin .8s linear infinite;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .error {
+            color: #a53e3e;
+            background: #fff2f1;
+            border: 1px solid #f0d1ce;
+            border-radius: 10px;
+            padding: 13px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 22px 0 8px;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        @media (max-width: 680px) {
+            .topbar { height: 64px; }
+            .topbar-inner, main {
+                width: calc(100% - 28px);
+            }
+            main { margin-top: 28px; }
+            .status { font-size: 11px; }
+            .brand-name { font-size: 16px; }
+            .brand-subtitle { font-size: 11px; }
+            .examples { grid-template-columns: 1fr; }
+            .example {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+            }
+            .example-icon { margin: 0; }
+            .example-description { margin-top: 2px; }
+            .panel-heading, .conversation, .composer {
+                padding: 16px;
+            }
+            .question-bubble { max-width: 95%; }
+            .composer-footer { align-items: flex-start; }
+            .hint { max-width: 55%; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: .01ms !important;
+                transition-duration: .01ms !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<header class="topbar">
+    <div class="topbar-inner">
+        <a class="brand" href="/" aria-label="MediQuery AI home">
+            <div class="brand-icon" aria-hidden="true">✚</div>
+            <div>
+                <div class="brand-name">MediQuery AI</div>
+                <div class="brand-subtitle">Medical knowledge assistant</div>
+            </div>
+        </a>
+        <div class="status">
+            <span class="status-dot"></span>
+            RAG-powered prototype
+        </div>
+    </div>
+</header>
+
+<main>
+    <section class="hero">
+        <div class="eyebrow">Your medical knowledge assistant</div>
+        <h1>Health information,<br>made easier to understand.</h1>
+        <p>Ask a question and explore an answer grounded in your indexed medical documents.</p>
+    </section>
+
+    <aside class="notice">
+        <span class="notice-icon" aria-hidden="true">ⓘ</span>
+        <div>
+            <strong>Important:</strong> This prototype provides educational
+            information, not a diagnosis or treatment recommendation. It uses
+            a limited document collection and may not cover your question.
+            For an emergency, contact local emergency services.
+        </div>
+    </aside>
+
+    <section aria-labelledby="examples-heading">
+        <h2 class="section-heading" id="examples-heading">Try an example question</h2>
+        <div class="examples">
+            <button class="example" type="button"
+                data-question="What are the symptoms of an aortic aneurysm?">
+                <span class="example-icon" aria-hidden="true">♡</span>
+                <span>
+                    <span class="example-title">Symptoms & signs</span>
+                    <span class="example-description">Learn about aortic aneurysm symptoms</span>
+                </span>
+            </button>
+
+            <button class="example" type="button"
+                data-question="How is an aortic aneurysm diagnosed?">
+                <span class="example-icon" aria-hidden="true">⌕</span>
+                <span>
+                    <span class="example-title">Diagnosis</span>
+                    <span class="example-description">Explore diagnostic information</span>
+                </span>
+            </button>
+
+            <button class="example" type="button"
+                data-question="What is an aortic aneurysm?">
+                <span class="example-icon" aria-hidden="true">▤</span>
+                <span>
+                    <span class="example-title">Understand the basics</span>
+                    <span class="example-description">Start with a simple explanation</span>
+                </span>
+            </button>
+        </div>
+    </section>
+
+    <section class="panel" aria-labelledby="assistant-heading">
+        <div class="panel-heading">
+            <div class="panel-title" id="assistant-heading">Conversation</div>
+            <button class="clear-button" id="clear-button" type="button">
+                Clear chat
+            </button>
+        </div>
+
+        <div class="conversation" id="chat" aria-live="polite" aria-busy="false">
+            <div class="welcome" id="welcome">
+                <div class="welcome-icon" aria-hidden="true">✚</div>
+                <h2>How can I help you learn?</h2>
+                <p>Enter a question below or choose one of the examples to get started.</p>
+            </div>
+        </div>
+
+        <form class="composer" id="question-form">
+            <label for="question">Your question</label>
+            <textarea
+                id="question"
+                name="question"
+                maxlength="1000"
+                placeholder="Ask about the medical information in the knowledge base..."
+                required></textarea>
+
+            <div class="composer-footer">
+                <span class="hint">Answers are based on retrieved documents.</span>
+                <button class="send-button" id="send-button" type="submit">
+                    Ask question&nbsp; ↑
+                </button>
+            </div>
+        </form>
+    </section>
+
+    <footer>
+        MediQuery AI · Educational prototype · Always consult a qualified healthcare professional.
+    </footer>
+</main>
+
+<script>
+    const form = document.getElementById("question-form");
+    const questionInput = document.getElementById("question");
+    const chat = document.getElementById("chat");
+    const sendButton = document.getElementById("send-button");
+    const clearButton = document.getElementById("clear-button");
+    const examples = document.querySelectorAll("[data-question]");
+
+    function addTextElement(tag, className, text) {
+        const element = document.createElement(tag);
+        if (className) element.className = className;
+        element.textContent = text;
+        chat.appendChild(element);
+        return element;
+    }
+
+    function showWelcome() {
+        chat.replaceChildren();
+
+        const welcome = document.createElement("div");
+        welcome.className = "welcome";
+
+        const icon = document.createElement("div");
+        icon.className = "welcome-icon";
+        icon.textContent = "✚";
+
+        const heading = document.createElement("h2");
+        heading.textContent = "How can I help you learn?";
+
+        const description = document.createElement("p");
+        description.textContent =
+            "Enter a question below or choose one of the examples to get started.";
+
+        welcome.append(icon, heading, description);
+        chat.appendChild(welcome);
+        questionInput.focus();
+    }
+
+    function showAnswer(data) {
+        chat.replaceChildren();
+
+        const answerHeading = addTextElement(
+            "div", "answer-heading", "AI-generated answer"
+        );
+
+        const answer = document.createElement("div");
+        answer.className = "answer-content";
+
+        // The server converts Markdown and sanitizes it with Bleach.
+        // Only use answer_html returned by that trusted server endpoint.
+        answer.innerHTML = data.answer_html || "";
+        chat.appendChild(answerHeading);
+        chat.appendChild(answer);
+
+        if (data.sources && data.sources.length) {
+            const details = document.createElement("details");
+            details.className = "sources";
+            details.open = true;
+
+            const summary = document.createElement("summary");
+            summary.textContent = `Sources used (${data.sources.length})`;
+
+            const list = document.createElement("div");
+            list.className = "source-list";
+
+            data.sources.forEach(source => {
+                const chip = document.createElement("div");
+                chip.className = "source-chip";
+                chip.textContent = source;
+                list.appendChild(chip);
+            });
+
+            details.append(summary, list);
+            chat.appendChild(details);
+        }
+
+        chat.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
+
+    async function askQuestion(question) {
+        if (!question || sendButton.disabled) return;
+
+        questionInput.value = question;
+        sendButton.disabled = true;
+        sendButton.textContent = "Thinking...";
+        chat.setAttribute("aria-busy", "true");
+        chat.replaceChildren();
+
+        const bubble = document.createElement("div");
+        bubble.className = "question-bubble";
+        bubble.textContent = question;
+        chat.appendChild(bubble);
+
+        const loading = document.createElement("div");
+        loading.className = "loading";
+
+        const spinner = document.createElement("span");
+        spinner.className = "spinner";
+        spinner.setAttribute("aria-hidden", "true");
+
+        const loadingText = document.createElement("span");
+        loadingText.textContent =
+            "Searching your documents and preparing an answer...";
+
+        loading.append(spinner, loadingText);
+        chat.appendChild(loading);
+
+        try {
+            const response = await fetch("/chat", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ question })
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.error || "Your request could not be completed.");
+            }
+
+            showAnswer(data);
+        } catch (error) {
+            chat.replaceChildren();
+            addTextElement(
+                "div",
+                "error",
+                error.message || "Something went wrong. Please try again."
+            );
+        } finally {
+            sendButton.disabled = false;
+            sendButton.textContent = "Ask question  ↑";
+            chat.setAttribute("aria-busy", "false");
+        }
+    }
+
+    form.addEventListener("submit", event => {
+        event.preventDefault();
+        askQuestion(questionInput.value.trim());
+    });
+
+    examples.forEach(button => {
+        button.addEventListener("click", () => {
+            askQuestion(button.dataset.question);
+        });
+    });
+
+    clearButton.addEventListener("click", showWelcome);
+</script>
+</body>
+</html>

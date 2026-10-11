@@ -1,0 +1,14 @@
+
+Flask
+python-dotenv
+pypdf
+langchain
+langchain-community
+langchain-groq
+langchain-pinecone
+langchain-huggingface
+sentence-transformers
+pinecone
+markdown
+bleach
+pytest
